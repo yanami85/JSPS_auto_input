@@ -71,22 +71,12 @@ df["value"] = pd.Series(df["value"], dtype = 'int64')
 
 driver = webdriver.Chrome(executable_path='./chromedriver.exe')
 
-JSPS_URL = "https://area31.smp.ne.jp/area/servlet/area.MyPageBundle?MyPageID=629871a6_lalj9lenala0oare4"
-JSPS_ID = "JSPS_ID"
-JSPS_PASS = "JSPS_PASS"
-
+J_SYSTEM_URL = "https://tyousa.jsps.go.jp/stu21/"
 J_SYSTEM_ID = "ID"
 J_SYSTEM_PASS = "PASS"
 
-driver.get(JSPS_URL)
+driver.get(J_SYSTEM_URL)
 sleep(1)
-driver.find_element_by_name("SMPID").send_keys(JSPS_ID)
-driver.find_element_by_name("SMPPASSWORD").send_keys(JSPS_PASS)
-driver.find_element_by_class_name("btn").click()
-driver.find_element_by_link_text('⑤ 報告書等提出システム（Jシステム）').click()
-sleep(1)
-
-driver.switch_to.window(driver.window_handles[1])
 driver.find_element_by_name("login_id").send_keys(J_SYSTEM_ID)
 driver.find_element_by_name("login_psw").send_keys(J_SYSTEM_PASS)
 driver.find_element_by_name("lg").click()
