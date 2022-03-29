@@ -4,11 +4,7 @@ from time import sleep
 import time
 import datetime
 from selenium.webdriver.support.select import Select
-
-df = pd.read_excel("研究遂行経費の支出報告書用入力シート.xlsx").dropna()
-
-df.columns = ["date", "item", "value", "is_tax","number", "expenditure", "is_receipt"]
-df['date'] = df['date'].dt.strftime("%Y-%m")
+import settings
 
 def add_tax(x):
     if x.is_tax =="税抜":
@@ -60,31 +56,6 @@ def assign_expenditure(x):
     elif x.expenditure == "所属・関連機関への交通費":
         return 5
 
-df['value'] = df.apply(lambda x: add_tax(x), axis = 1)*df["number"]
-df["date"] = df.apply(lambda x: convert_date_to_flag(x), axis = 1)
-df["is_receipt"] = df.apply(lambda x: is_receipt(x), axis = 1)
-df["expenditure"] = df.apply(lambda x: assign_expenditure(x), axis = 1)
-
-df_l = [list(row) for row in df.itertuples()]
-df = df[["date", "item", "expenditure", "is_receipt", "value"]]
-df["value"] = pd.Series(df["value"], dtype = 'int64')
-
-driver = webdriver.Chrome(executable_path='./chromedriver.exe')
-
-J_SYSTEM_URL = "https://tyousa.jsps.go.jp/stu21/"
-J_SYSTEM_ID = "ID"
-J_SYSTEM_PASS = "PASS"
-
-driver.get(J_SYSTEM_URL)
-sleep(1)
-driver.find_element_by_name("login_id").send_keys(J_SYSTEM_ID)
-driver.find_element_by_name("login_psw").send_keys(J_SYSTEM_PASS)
-driver.find_element_by_name("lg").click()
-sleep(1)
-
-driver.find_element_by_id("li_of_F003").click()
-sleep(1)
-
 def enter_forum(row):
     dropdown_expense = driver.find_element_by_id('etr_group')
     select_expense = Select(dropdown_expense)
@@ -103,15 +74,45 @@ def enter_forum(row):
     driver.find_element_by_id("add_to_basetable").click()
     sleep(2)
 
+if __name__ == '__main__':
+    df = pd.read_excel(settings.EXCEL_SHEET_PATH, usecols=[0,1,2,3,4,5,6]).dropna()
 
-if driver.find_element_by_id("goto_F003_edit"):
-    driver.find_element_by_id("goto_F003_edit").click()
-    sleep(2)
-    for row in df.itertuples():
-        enter_forum(row)
-else:
-    sleep(2)
-    for row in df.itertuples():
-        enter_forum(row)
+    df.columns = ["date", "item", "value", "is_tax","number", "expenditure", "is_receipt"]
+    df['date'] = df['date'].dt.strftime("%Y-%m")
 
-driver.find_element_by_id("additional_function_on_submitting").click()
+    df['value'] = df.apply(lambda x: add_tax(x), axis = 1)*df["number"]
+    df["date"] = df.apply(lambda x: convert_date_to_flag(x), axis = 1)
+    df["is_receipt"] = df.apply(lambda x: is_receipt(x), axis = 1)
+    df["expenditure"] = df.apply(lambda x: assign_expenditure(x), axis = 1)
+
+    df_l = [list(row) for row in df.itertuples()]
+    df = df[["date", "item", "expenditure", "is_receipt", "value"]]
+    df["value"] = pd.Series(df["value"], dtype = 'int64')
+
+    driver = webdriver.Chrome(executable_path=settings.EXECUTABLE_PATH)
+
+    J_SYSTEM_URL = "https://tyousa.jsps.go.jp/stu21/"
+    J_SYSTEM_ID = settings.J_SYSTEM_ID
+    J_SYSTEM_PASS = settings.J_SYSTEM_PASS
+
+    driver.get(J_SYSTEM_URL)
+    sleep(1)
+    driver.find_element_by_name("login_id").send_keys(J_SYSTEM_ID)
+    driver.find_element_by_name("login_psw").send_keys(J_SYSTEM_PASS)
+    driver.find_element_by_name("lg").click()
+    sleep(1)
+
+    driver.find_element_by_id("li_of_F003").click()
+    sleep(1)
+
+    if len(driver.find_elements_by_id("goto_F003_edit")) > 0:
+        driver.find_element_by_id("goto_F003_edit").click()
+        sleep(2)
+        for row in df.itertuples():
+            enter_forum(row)
+    else:
+        sleep(2)
+        for row in df.itertuples():
+            enter_forum(row)
+
+    driver.find_element_by_id("additional_function_on_submitting").click()
