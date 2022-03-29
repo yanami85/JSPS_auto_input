@@ -6,4 +6,4 @@ J_SYSTEM_PASS = "XXXXXX"
 DRIVER_PATH = "./chromedriver.exe"
 
 # 報告書シートへのパス
-EXCEL_SHEET_PATH = '研究遂行経費の支出報告書用入力シート.xlsx'
+EXCEL_SHEET_PATH = 'item_list.xlsx'
