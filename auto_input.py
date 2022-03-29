@@ -89,7 +89,7 @@ if __name__ == '__main__':
     df = df[["date", "item", "expenditure", "is_receipt", "value"]]
     df["value"] = pd.Series(df["value"], dtype = 'int64')
 
-    driver = webdriver.Chrome(executable_path=settings.EXECUTABLE_PATH)
+    driver = webdriver.Chrome(executable_path=settings.DRIVER_PATH)
 
     J_SYSTEM_URL = "https://tyousa.jsps.go.jp/stu21/"
     J_SYSTEM_ID = settings.J_SYSTEM_ID

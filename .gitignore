@@ -3,3 +3,4 @@
 !item_list_sample.xlsx
 chromedriver*
 settings.py
+__pycache__
