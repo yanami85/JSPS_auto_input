@@ -116,3 +116,5 @@ if __name__ == '__main__':
             enter_forum(row)
 
     driver.find_element_by_id("additional_function_on_submitting").click()
+    alert = driver.switch_to.alert
+    alert.accept()
