@@ -58,22 +58,25 @@ def enter_forum(row):
     
     wait.until(EC.presence_of_element_located((By.NAME,"etr_billAmount")))
     driver.find_element(By.NAME,"etr_billAmount").send_keys(row.value)
-    
+
+    wait.until(EC.presence_of_element_located((By.NAME,"etr_remark")))
+    driver.find_element(By.NAME,"etr_remark").send_keys(row.remark)
+
     wait.until(EC.element_to_be_clickable((By.ID,"add_to_basetable")))
     driver.find_element(By.ID,"add_to_basetable").click()
 
 if __name__ == '__main__':
-    df = pd.read_excel(settings.EXCEL_SHEET_PATH, usecols=[0,1,2,3,4,5,6]).dropna()
-    
+    df = pd.read_excel(settings.EXCEL_SHEET_PATH, usecols=[0,1,2,3,4,5,6,7]).dropna(how='all').fillna('')
+
     # seleniumで入力するためのidやキーを纏めたデータを作成する
-    df.columns = ["date", "item", "value", "is_tax","number", "expenditure", "determine_receipt"]
+    df.columns = ["date", "item", "value", "is_tax","number", "expenditure", "determine_receipt", "remark"]
     df['date'] = df['date'].dt.strftime("%Y-%m")
     df['value'] = df.apply(lambda x: add_tax(x), axis = 1)*df["number"]
     df["date"] = df.apply(lambda x: convert_date_to_flag(x), axis = 1)
     df["determine_receipt"] = df.apply(lambda x: determine_receipt(x), axis = 1)
     df["expenditure"] = df.apply(lambda x: assign_expenditure(x), axis = 1)
     df_l = [list(row) for row in df.itertuples()]
-    df = df[["date", "item", "expenditure", "determine_receipt", "value"]]
+    df = df[["date", "item", "expenditure", "determine_receipt", "value", "remark"]]
     df["value"] = pd.Series(df["value"], dtype = 'int64')
 
     driver = webdriver.Chrome(executable_path=settings.DRIVER_PATH)
