@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 import settings
 
 def add_tax(x):
@@ -40,7 +41,12 @@ def assign_expenditure(row):
 
 
 def enter_forum(row):
-    wait.until(EC.presence_of_element_located((By.ID,'etr_group')))
+    try:
+        wait.until(EC.presence_of_element_located((By.ID,'etr_group')))
+    except TimeoutException:
+        wait.until(EC.presence_of_element_located((By.ID,'goto_F003_edit')))
+        driver.find_element(By.ID, "goto_F003_edit").click()
+        wait.until(EC.presence_of_element_located((By.ID,'etr_group')))
     dropdown_expense = driver.find_element(By.ID,'etr_group')
     select_expense = Select(dropdown_expense)
     select_expense.select_by_index(row.expenditure)
