@@ -56,8 +56,8 @@ def enter_forum(row):
     select_date = Select(dropdown_date)
     select_date.select_by_index(row.date)
     
-    wait.until(EC.element_to_be_clickable((By.ID, str(row.determine_receipt))))
-    driver.find_element(By.ID,str(row.determine_receipt)).click()
+    # wait.until(EC.element_to_be_clickable((By.ID, str(row.determine_receipt))))
+    # driver.find_element(By.ID,str(row.determine_receipt)).click()
     
     wait.until(EC.presence_of_element_located((By.NAME,"etr_itemName")))
     driver.find_element(By.NAME,"etr_itemName").send_keys(row.item)
