@@ -14,7 +14,7 @@ def add_tax(x):
         return x.value
 
 def convert_date_to_flag(x):
-    this_year = 2022
+    this_year = settings.THIS_YEAR
     date_to_flag_map = {
         f"{this_year}-04": 1, f"{this_year}-05": 2, f"{this_year}-06": 3,
         f"{this_year}-07": 4, f"{this_year}-08": 5, f"{this_year}-09": 6,
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 
     driver = webdriver.Chrome(executable_path=settings.DRIVER_PATH)
 
-    J_SYSTEM_URL = r"https://tyousa.jsps.go.jp/stu22/"
+    J_SYSTEM_URL = rf"https://tyousa.jsps.go.jp/stu{str(settings.THIS_YEAR)[-2:]}/"
     J_SYSTEM_ID = settings.J_SYSTEM_ID
     J_SYSTEM_PASS = settings.J_SYSTEM_PASS
 
