@@ -5,6 +5,9 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
+
 import settings
 
 def add_tax(x):
@@ -19,8 +22,9 @@ def convert_date_to_flag(x):
         f"{this_year}-04": 1, f"{this_year}-05": 2, f"{this_year}-06": 3,
         f"{this_year}-07": 4, f"{this_year}-08": 5, f"{this_year}-09": 6,
         f"{this_year}-10": 7, f"{this_year}-11": 8, f"{this_year}-12": 9,
-        f"{this_year + 1}-01": 10, f"{this_year + 1}-02": 11, f"{this_year + 1}-03": 12
+        f"{this_year+1}-01": 10, f"{this_year+1}-02": 11, f"{this_year+1}-03": 12
     }
+
     return date_to_flag_map[x.date]
 
 def determine_receipt(row):
@@ -85,7 +89,9 @@ if __name__ == '__main__':
     df = df[["date", "item", "expenditure", "determine_receipt", "value", "remark"]]
     df["value"] = pd.Series(df["value"], dtype = 'int64')
 
-    driver = webdriver.Chrome(executable_path=settings.DRIVER_PATH)
+    service = Service(ChromeDriverManager().install())
+    options = webdriver.ChromeOptions()
+    driver = webdriver.Chrome(service=service, options=options)
 
     J_SYSTEM_URL = rf"https://tyousa.jsps.go.jp/stu{str(settings.THIS_YEAR)[-2:]}/"
     J_SYSTEM_ID = settings.J_SYSTEM_ID
